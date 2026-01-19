@@ -1,0 +1,16 @@
+{
+  "name": "desafio-gasola",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix back-end\" \"npm run dev --prefix front-end\"",
+    "install:all": "npm install && npm install --prefix back-end && npm install --prefix front-end"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
