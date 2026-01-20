@@ -16,9 +16,11 @@ Criar um jogo de forca, usando front react e backend node + adonis
 - [x] Inicializar projeto Backend (AdonisJS).
 - [x] Inicializar projeto Frontend (React + Vite + Styled Components).
 - [x] Configurar linting e formatação.
+- [x] Configurar `concurrently` para rodar o backend e frontend juntos.
+- [x] Adicionar `.nvmrc` para especificar versão do Node.js.
 
 ## Fase 2: Backend - Core (AdonisJS)
-- [ ] Configurar Banco de Dados (SQLite para dev).
+- [x] Configurar Banco de Dados (SQLite para dev).
 - [ ] Criar Migrations e Models:
     - `User`: Simples, apenas `username` (para Ranking).
     - `Game`: Estado do jogo (palavra, letras descobertas, **vidas restantes/erros**). Importante persistir a vida do jogador.
