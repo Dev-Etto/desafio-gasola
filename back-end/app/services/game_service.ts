@@ -14,7 +14,7 @@ import { GameStatus } from '#enums/game_status'
 import { ERROR_MESSAGES, GAME_MESSAGES } from '../constants/messages.js'
 
 export default class GameService {
-  async createGame(username: string) {
+  async createGame(username: string, sessionId: string) {
     return await db.transaction(async (trx) => {
       const user = await User.firstOrCreate({ username }, { username }, { client: trx })
       const word = await Word.query({ client: trx }).orderByRaw('RANDOM()').first()
@@ -27,6 +27,7 @@ export default class GameService {
         {
           userId: user.id,
           wordId: word.id,
+          sessionId: sessionId,
           status: GameStatus.PLAYING,
           remainingLives: 6,
           lettersGuessed: JSON.stringify([]),
@@ -78,11 +79,24 @@ export default class GameService {
 
     if (isWin) {
       updates.status = GameStatus.WON
-      updates.score = 100 + (updates.remainingLives ?? game.remainingLives) * 10
+      const uniqueLetters = new Set(targetWord.replace(/\s/g, '').split('')).size
+      updates.score = uniqueLetters * 10 + (updates.remainingLives ?? game.remainingLives) * 5
     }
 
     if (isLoss) {
       updates.status = GameStatus.LOST
+
+      const sessionGames = await Game.query()
+        .where('session_id', game.sessionId)
+        .where('status', GameStatus.WON)
+
+      const sessionScore = sessionGames.reduce((acc, g) => acc + g.score, 0)
+
+      const user = await User.find(game.userId)
+      if (user && sessionScore > user.highScore) {
+        user.highScore = sessionScore
+        await user.save()
+      }
     }
 
     game.merge(updates)

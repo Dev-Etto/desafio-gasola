@@ -5,11 +5,11 @@ import { createGameValidator, guessLetterValidator } from '#validators/game_vali
 
 export default class GamesController {
   async store({ request, response }: HttpContext) {
-    const { username } = await request.validateUsing(createGameValidator)
+    const { username, sessionId } = await request.validateUsing(createGameValidator)
 
     const service = new GameService()
 
-    const game = await service.createGame(username)
+    const game = await service.createGame(username, sessionId)
 
     const wordLength = game.word.word.length
     const categoryName = game.word.category ? game.word.category.name : DEFAULTS.UNKNOWN_CATEGORY

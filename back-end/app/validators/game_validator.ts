@@ -3,6 +3,7 @@ import vine from '@vinejs/vine'
 export const createGameValidator = vine.compile(
   vine.object({
     username: vine.string().trim().minLength(1).maxLength(50),
+    sessionId: vine.string().trim().uuid(),
   })
 )
 

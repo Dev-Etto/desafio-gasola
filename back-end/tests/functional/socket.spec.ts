@@ -53,4 +53,26 @@ test.group('GameService (Logic used by Socket)', () => {
     assert.equal(result.wordMask, '_ _ _ _')
     assert.equal(result.game.remainingLives, 5)
   })
+
+  test('processGuess: handles winning guess and returns score', async ({ assert }) => {
+    const category = await Category.create({ name: 'WinTest' })
+    const word = await Word.create({ word: 'A', categoryId: category.id })
+    const user = await User.create({ username: 'winner_svc' })
+
+    const game = await Game.create({
+      userId: user.id,
+      wordId: word.id,
+      status: GameStatus.PLAYING,
+      remainingLives: 6,
+      lettersGuessed: JSON.stringify([]),
+      score: 0,
+    })
+
+    const service = new GameService()
+    const result = await service.processGuess(game.id, 'A')
+
+    assert.equal(result.isWin, true)
+    assert.equal(result.game.score, 40)
+    assert.equal(result.game.status, GameStatus.WON)
+  })
 })

@@ -13,4 +13,7 @@ export default class User extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: 'updated_at' })
   declare updatedAt: DateTime | null
+
+  @column({ serializeAs: 'high_score' })
+  declare highScore: number
 }
