@@ -29,8 +29,13 @@ const IMPORTER = (filePath: string) => {
   return import(filePath)
 }
 
-new Ignitor(APP_ROOT, { importer: IMPORTER })
+import { ApplicationService } from '@adonisjs/core/types'
+
+let appInstance: ApplicationService
+
+const runner = new Ignitor(APP_ROOT, { importer: IMPORTER })
   .tap((app) => {
+    appInstance = app
     app.booting(async () => {
       await import('#start/env')
     })
@@ -38,7 +43,15 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
     app.listenIf(app.managedByPm2, 'SIGINT', () => app.terminate())
   })
   .httpServer()
+
+runner
   .start()
+  .then(async () => {
+    const server = await appInstance.container.make('server')
+    const Ws = await import('#services/ws')
+    // @ts-ignore - getNodeServer exists on the Adonis server implementation
+    Ws.default.boot(server.getNodeServer())
+  })
   .catch((error) => {
     process.exitCode = 1
     prettyPrintError(error)

@@ -4,7 +4,12 @@
   "main": "index.js",
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix back-end\" \"npm run dev --prefix front-end\"",
-    "install:all": "npm install && npm install --prefix back-end && npm install --prefix front-end"
+    "build": "concurrently \"npm run build --prefix back-end\" \"npm run build --prefix front-end\"",
+    "test:backend": "npm run test --prefix back-end",
+    "lint": "concurrently \"npm run lint --prefix back-end\" \"npm run lint --prefix front-end\"",
+    "install:all": "npm install && npm install --prefix back-end && npm install --prefix front-end",
+    "db:migrate": "npm run migration:run --prefix back-end",
+    "db:seed": "npm run db:seed --prefix back-end"
   },
   "keywords": [],
   "author": "",
