@@ -4,6 +4,7 @@ import Game from '#models/game'
 import Word from '#models/word'
 import User from '#models/user'
 import Category from '#models/category'
+import { GameStatus } from '#enums/game_status'
 
 test.group('GameService (Logic used by Socket)', () => {
   test('processGuess: handles correct guess and updates response', async ({ assert }) => {
@@ -14,7 +15,7 @@ test.group('GameService (Logic used by Socket)', () => {
     const game = await Game.create({
       userId: user.id,
       wordId: word.id,
-      status: 'playing',
+      status: GameStatus.PLAYING,
       remainingLives: 6,
       lettersGuessed: JSON.stringify([]),
       score: 0,
@@ -39,7 +40,7 @@ test.group('GameService (Logic used by Socket)', () => {
     const game = await Game.create({
       userId: user.id,
       wordId: word.id,
-      status: 'playing',
+      status: GameStatus.PLAYING,
       remainingLives: 6,
       lettersGuessed: JSON.stringify([]),
       score: 0,

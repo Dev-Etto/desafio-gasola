@@ -1,5 +1,6 @@
 import { Server } from 'socket.io'
 import type { Server as HttpServer } from 'node:http'
+import env from '#start/env'
 
 class WsService {
   io: Server | undefined
@@ -13,7 +14,7 @@ class WsService {
     this.isBooted = true
     this.io = new Server(httpServer, {
       cors: {
-        origin: '*',
+        origin: env.get('CORS_ORIGIN').split(',') || '*',
       },
     })
 

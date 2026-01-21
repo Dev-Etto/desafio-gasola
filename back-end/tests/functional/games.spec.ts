@@ -3,6 +3,7 @@ import Game from '#models/game'
 import Word from '#models/word'
 import User from '#models/user'
 import Category from '#models/category'
+import { GameStatus } from '#enums/game_status'
 
 test.group('Games', () => {
   test('successfully create a new game', async ({ client, assert }) => {
@@ -16,21 +17,21 @@ test.group('Games', () => {
     response.assertStatus(201)
     response.assertBodyContains({
       username: 'player1',
-      remaining_lives: 6,
-      letters_guessed: [],
-      status: 'playing',
+      remainingLives: 6,
+      lettersGuessed: [],
+      status: GameStatus.PLAYING,
     })
 
     const body = response.body()
-    assert.exists(body.game_id)
-    assert.exists(body.word_length)
-    assert.isNumber(body.word_length)
+    assert.exists(body.gameId)
+    assert.exists(body.wordLength)
+    assert.isNumber(body.wordLength)
     assert.exists(body.category)
   })
 
   test('cannot create game without username', async ({ client }) => {
     const response = await client.post('/games').json({})
-    response.assertStatus(400)
+    response.assertStatus(422)
   })
 
   test('game logic: correct guess', async ({ client }) => {
@@ -41,7 +42,7 @@ test.group('Games', () => {
     const game = await Game.create({
       userId: user.id,
       wordId: word.id,
-      status: 'playing',
+      status: GameStatus.PLAYING,
       remainingLives: 6,
       lettersGuessed: JSON.stringify([]),
       score: 0,
@@ -53,10 +54,10 @@ test.group('Games', () => {
 
     response.assertStatus(200)
     response.assertBodyContains({
-      status: 'playing',
-      remaining_lives: 6,
-      letters_guessed: ['T'],
-      word_mask: 'T _ _ T',
+      status: GameStatus.PLAYING,
+      remainingLives: 6,
+      lettersGuessed: ['T'],
+      wordMask: 'T _ _ T',
     })
   })
 
@@ -68,7 +69,7 @@ test.group('Games', () => {
     const game = await Game.create({
       userId: user.id,
       wordId: word.id,
-      status: 'playing',
+      status: GameStatus.PLAYING,
       remainingLives: 6,
       lettersGuessed: JSON.stringify([]),
       score: 0,
@@ -80,10 +81,10 @@ test.group('Games', () => {
 
     response.assertStatus(200)
     response.assertBodyContains({
-      status: 'playing',
-      remaining_lives: 5,
-      letters_guessed: ['Z'],
-      word_mask: '_ _ _ _ _',
+      status: GameStatus.PLAYING,
+      remainingLives: 5,
+      lettersGuessed: ['Z'],
+      wordMask: '_ _ _ _ _',
     })
   })
 
@@ -95,7 +96,7 @@ test.group('Games', () => {
     const game = await Game.create({
       userId: user.id,
       wordId: word.id,
-      status: 'playing',
+      status: GameStatus.PLAYING,
       remainingLives: 6,
       lettersGuessed: JSON.stringify(['H']),
       score: 0,
@@ -107,12 +108,12 @@ test.group('Games', () => {
 
     response.assertStatus(200)
     response.assertBodyContains({
-      status: 'won',
+      status: GameStatus.WON,
       message: 'You Won!',
     })
 
     const refreshedGame = await Game.find(game.id)
-    assert.equal(refreshedGame?.status, 'won')
+    assert.equal(refreshedGame?.status, GameStatus.WON)
   })
 
   test('game logic: losing the game', async ({ client }) => {
@@ -123,7 +124,7 @@ test.group('Games', () => {
     const game = await Game.create({
       userId: user.id,
       wordId: word.id,
-      status: 'playing',
+      status: GameStatus.PLAYING,
       remainingLives: 1,
       lettersGuessed: JSON.stringify([]),
       score: 0,
@@ -135,9 +136,9 @@ test.group('Games', () => {
 
     response.assertStatus(200)
     response.assertBodyContains({
-      status: 'lost',
+      status: GameStatus.LOST,
       message: 'Game Over',
-      remaining_lives: 0,
+      remainingLives: 0,
     })
   })
 })

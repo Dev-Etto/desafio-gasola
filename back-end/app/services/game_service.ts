@@ -7,9 +7,11 @@ import {
   InvalidGameActionException,
   PuzzlesUnavailableException,
 } from '#exceptions/game/exceptions'
-import { safeParse } from '../utils/json_utils.js'
 
-import { ERROR_MESSAGES } from '../constants/messages.js'
+import { safeParse } from '../utils/json_utils.js'
+import { GameStatus } from '#enums/game_status'
+
+import { ERROR_MESSAGES, GAME_MESSAGES } from '../constants/messages.js'
 
 export default class GameService {
   async createGame(username: string) {
@@ -25,7 +27,7 @@ export default class GameService {
         {
           userId: user.id,
           wordId: word.id,
-          status: 'playing',
+          status: GameStatus.PLAYING,
           remainingLives: 6,
           lettersGuessed: JSON.stringify([]),
           score: 0,
@@ -41,10 +43,6 @@ export default class GameService {
   }
 
   async processGuess(gameId: number, letter: string) {
-    if (!letter || typeof letter !== 'string' || letter.length !== 1 || !/[a-zA-Z]/.test(letter)) {
-      throw new InvalidGameActionException(ERROR_MESSAGES.INVALID_LETTER)
-    }
-
     const upperLetter = letter.toUpperCase()
 
     const game = await Game.find(gameId)
@@ -52,7 +50,7 @@ export default class GameService {
       throw new GameNotFoundException()
     }
 
-    if (game.status !== 'playing') {
+    if (game.status !== GameStatus.PLAYING) {
       throw new InvalidGameActionException(ERROR_MESSAGES.GAME_ALREADY_OVER)
     }
 
@@ -66,28 +64,36 @@ export default class GameService {
     }
 
     guessed.push(upperLetter)
-    game.lettersGuessed = JSON.stringify(guessed)
+
+    const updates: Partial<Game> = {
+      lettersGuessed: JSON.stringify(guessed),
+    }
 
     if (!targetWord.includes(upperLetter)) {
-      game.remainingLives -= 1
+      updates.remainingLives = game.remainingLives - 1
     }
 
     const isWin = targetWord.split('').every((char) => guessed.includes(char))
-    const isLoss = game.remainingLives <= 0
+    const isLoss = (updates.remainingLives ?? game.remainingLives) <= 0
 
     if (isWin) {
-      game.status = 'won'
-      game.score = 100 + game.remainingLives * 10
-    } else if (isLoss) {
-      game.status = 'lost'
+      updates.status = GameStatus.WON
+      updates.score = 100 + (updates.remainingLives ?? game.remainingLives) * 10
     }
 
+    if (isLoss) {
+      updates.status = GameStatus.LOST
+    }
+
+    game.merge(updates)
     await game.save()
 
     const wordMask = targetWord
       .split('')
       .map((char) => (guessed.includes(char) ? char : '_'))
       .join(' ')
+
+    const message = this.getGameMessage(isWin, isLoss)
 
     return {
       game,
@@ -96,6 +102,19 @@ export default class GameService {
       isWin,
       isLoss,
       targetWord,
+      message,
     }
+  }
+
+  getGameMessage(isWin: boolean, isLoss: boolean): string {
+    if (isWin) {
+      return GAME_MESSAGES.YOU_WON
+    }
+
+    if (isLoss) {
+      return GAME_MESSAGES.GAME_OVER
+    }
+
+    return GAME_MESSAGES.KEEP_GUESSING
   }
 }

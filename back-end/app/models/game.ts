@@ -3,24 +3,25 @@ import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import User from '#models/user'
 import Word from '#models/word'
+import { GameStatus } from '#enums/game_status'
 
 export default class Game extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @column()
+  @column({ serializeAs: 'user_id' })
   declare userId: number
 
-  @column()
+  @column({ serializeAs: 'word_id' })
   declare wordId: number
 
   @column()
-  declare status: string
+  declare status: GameStatus
 
-  @column()
+  @column({ serializeAs: 'letters_guessed' })
   declare lettersGuessed: string
 
-  @column()
+  @column({ serializeAs: 'remaining_lives' })
   declare remainingLives: number
 
   @column()
@@ -32,9 +33,9 @@ export default class Game extends BaseModel {
   @belongsTo(() => Word)
   declare word: BelongsTo<typeof Word>
 
-  @column.dateTime({ autoCreate: true })
+  @column.dateTime({ autoCreate: true, serializeAs: 'created_at' })
   declare createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: 'updated_at' })
   declare updatedAt: DateTime
 }

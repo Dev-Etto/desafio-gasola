@@ -1,14 +1,11 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import GameService from '#services/game_service'
-import { ERROR_MESSAGES, GAME_MESSAGES, DEFAULTS } from '../constants/messages.js'
+import { DEFAULTS } from '../constants/messages.js'
+import { createGameValidator, guessLetterValidator } from '#validators/game_validator'
 
 export default class GamesController {
   async store({ request, response }: HttpContext) {
-    const { username } = request.only(['username'])
-
-    if (!username) {
-      return response.badRequest({ message: ERROR_MESSAGES.USERNAME_REQUIRED })
-    }
+    const { username } = await request.validateUsing(createGameValidator)
 
     const service = new GameService()
 
@@ -18,41 +15,33 @@ export default class GamesController {
     const categoryName = game.word.category ? game.word.category.name : DEFAULTS.UNKNOWN_CATEGORY
 
     return response.created({
-      game_id: game.id,
+      gameId: game.id,
       username: username,
-      word_length: wordLength,
+      wordLength: wordLength,
       category: categoryName,
-      remaining_lives: game.remainingLives,
-      letters_guessed: [],
+      remainingLives: game.remainingLives,
+      lettersGuessed: [],
       status: game.status,
     })
   }
 
   async guess({ params, request, response }: HttpContext) {
     const gameId = params.id
-    const { letter } = request.only(['letter'])
+    const { letter } = await request.validateUsing(guessLetterValidator)
     const service = new GameService()
 
-    const { game, guessed, wordMask, isWin, isLoss, targetWord } = await service.processGuess(
-      gameId,
-      letter
-    )
-
-    const message = isWin
-      ? GAME_MESSAGES.YOU_WON
-      : isLoss
-        ? GAME_MESSAGES.GAME_OVER
-        : GAME_MESSAGES.KEEP_GUESSING
+    const { game, guessed, wordMask, isWin, isLoss, targetWord, message } =
+      await service.processGuess(gameId, letter)
 
     return response.json({
-      game_id: game.id,
+      gameId: game.id,
       status: game.status,
-      remaining_lives: game.remainingLives,
-      letters_guessed: guessed,
-      word_mask: wordMask,
+      remainingLives: game.remainingLives,
+      lettersGuessed: guessed,
+      wordMask: wordMask,
       message,
       score: game.score,
-      word_reveal: isWin || isLoss ? targetWord : undefined,
+      wordReveal: isWin || isLoss ? targetWord : undefined,
     })
   }
 }
