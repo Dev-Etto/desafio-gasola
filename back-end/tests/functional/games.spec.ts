@@ -4,6 +4,7 @@ import Word from '#models/word'
 import User from '#models/user'
 import Category from '#models/category'
 import { GameStatus } from '#enums/game_status'
+import { GAME_MESSAGES } from '../../app/constants/messages.js'
 
 test.group('Games', () => {
   test('successfully create a new game', async ({ client, assert }) => {
@@ -109,7 +110,7 @@ test.group('Games', () => {
     response.assertStatus(200)
     response.assertBodyContains({
       status: GameStatus.WON,
-      message: 'You Won!',
+      message: GAME_MESSAGES.YOU_WON,
     })
 
     const refreshedGame = await Game.find(game.id)
@@ -137,7 +138,7 @@ test.group('Games', () => {
     response.assertStatus(200)
     response.assertBodyContains({
       status: GameStatus.LOST,
-      message: 'Game Over',
+      message: GAME_MESSAGES.GAME_OVER,
       remainingLives: 0,
     })
   })
