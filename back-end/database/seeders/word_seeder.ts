@@ -1,0 +1,148 @@
+import { BaseSeeder } from '@adonisjs/lucid/seeders'
+import Category from '#models/category'
+import Word from '#models/word'
+
+export default class extends BaseSeeder {
+  async run() {
+    const backend = await Category.findByOrFail('name', 'Back-end')
+    const frontend = await Category.findByOrFail('name', 'Front-end')
+    const mobile = await Category.findByOrFail('name', 'Mobile')
+    const db = await Category.findByOrFail('name', 'Banco de Dados')
+    const devops = await Category.findByOrFail('name', 'DevOps')
+    const qa = await Category.findByOrFail('name', 'QA')
+
+    await Word.createMany([
+      // Back-end
+      { word: 'CONTROLLER', hint: 'Gerencia requisições', categoryId: backend.id },
+      { word: 'MIDDLEWARE', hint: 'Intercepa requisições', categoryId: backend.id },
+      { word: 'API', hint: 'Interface de comunicação', categoryId: backend.id },
+      { word: 'ROUTE', hint: 'Caminho da URL', categoryId: backend.id },
+      { word: 'MIGRATION', hint: 'Versionamento de banco', categoryId: backend.id },
+      { word: 'SEEDER', hint: 'Popula o banco', categoryId: backend.id },
+      { word: 'ORM', hint: 'Mapeamento objeto-relacional', categoryId: backend.id },
+      { word: 'NODEJS', hint: 'Runtime JS no server', categoryId: backend.id },
+      { word: 'ADONIS', hint: 'Framework Node.js robusto', categoryId: backend.id },
+      { word: 'EXPRESS', hint: 'Framework web minimalista', categoryId: backend.id },
+      { word: 'JAVA', hint: 'Linguagem orientada a objetos', categoryId: backend.id },
+      { word: 'PYTHON', hint: 'Popular em Data Science e Web', categoryId: backend.id },
+      { word: 'SERVER', hint: 'Hospeda a aplicação', categoryId: backend.id },
+      { word: 'HTTP', hint: 'Protocolo da Web', categoryId: backend.id },
+      { word: 'STATUS', hint: 'Código de resposta HTTP', categoryId: backend.id },
+      { word: 'JSON', hint: 'Formato de troca de dados', categoryId: backend.id },
+      { word: 'REST', hint: 'Estilo de arquitetura API', categoryId: backend.id },
+      { word: 'GRAPHQL', hint: 'Query language para APIs', categoryId: backend.id },
+      { word: 'SOLID', hint: 'Princípios de design', categoryId: backend.id },
+      { word: 'AUTHENTICATION', hint: 'Verifica identidade', categoryId: backend.id },
+
+      // Front-end
+      { word: 'COMPONENT', hint: 'Bloco de construção de UI', categoryId: frontend.id },
+      { word: 'HOOK', hint: 'Funcionalidade do React', categoryId: frontend.id },
+      { word: 'STATE', hint: 'Dados mutáveis do componente', categoryId: frontend.id },
+      { word: 'PROPS', hint: 'Dados passados para componentes', categoryId: frontend.id },
+      { word: 'REACT', hint: 'Lib JS popular', categoryId: frontend.id },
+      { word: 'VUE', hint: 'Framework progressivo', categoryId: frontend.id },
+      { word: 'HTML', hint: 'Estrutura da página', categoryId: frontend.id },
+      { word: 'CSS', hint: 'Estilização da página', categoryId: frontend.id },
+      { word: 'JAVASCRIPT', hint: 'Linguagem da Web', categoryId: frontend.id },
+      { word: 'TYPESCRIPT', hint: 'JS com tipagem', categoryId: frontend.id },
+      { word: 'DOM', hint: 'Modelo de objeto do documento', categoryId: frontend.id },
+      { word: 'VITE', hint: 'Build tool rápida', categoryId: frontend.id },
+      { word: 'WEBPACK', hint: 'Module bundler clássico', categoryId: frontend.id },
+      { word: 'RESPONSIVE', hint: 'Adapta a telas', categoryId: frontend.id },
+      { word: 'FLEXBOX', hint: 'Layout unidimensional', categoryId: frontend.id },
+      { word: 'GRID', hint: 'Layout bidimensional', categoryId: frontend.id },
+      { word: 'TAILWIND', hint: 'Framework CSS utilitário', categoryId: frontend.id },
+      { word: 'ACCESSIBILITY', hint: 'Inclusão para todos', categoryId: frontend.id },
+      { word: 'NPM', hint: 'Gerenciador de pacotes', categoryId: frontend.id },
+      { word: 'SPA', hint: 'Single Page Application', categoryId: frontend.id },
+
+      // Mobile
+      { word: 'REACTNATIVE', hint: 'React para mobile', categoryId: mobile.id },
+      { word: 'FLUTTER', hint: 'UI toolkit do Google', categoryId: mobile.id },
+      { word: 'SWIFT', hint: 'Linguagem iOS moderna', categoryId: mobile.id },
+      { word: 'KOTLIN', hint: 'Linguagem Android moderna', categoryId: mobile.id },
+      { word: 'ANDROID', hint: 'SO do Google', categoryId: mobile.id },
+      { word: 'IOS', hint: 'SO da Apple', categoryId: mobile.id },
+      { word: 'EXPO', hint: 'Plataforma para React Native', categoryId: mobile.id },
+      { word: 'WEBVIEW', hint: 'Navegador embutido', categoryId: mobile.id },
+      { word: 'NATIVE', hint: 'Código específico da plataforma', categoryId: mobile.id },
+      { word: 'HYBRID', hint: 'Web app em container nativo', categoryId: mobile.id },
+      { word: 'APK', hint: 'Pacote Android', categoryId: mobile.id },
+      { word: 'EMULATOR', hint: 'Simula dispositivo', categoryId: mobile.id },
+      { word: 'TOUCH', hint: 'Interação de toque', categoryId: mobile.id },
+      { word: 'GESTURE', hint: 'Movimento na tela', categoryId: mobile.id },
+      { word: 'SCREEN', hint: 'Tela do app', categoryId: mobile.id },
+      { word: 'NAVIGATION', hint: 'Troca de telas', categoryId: mobile.id },
+      { word: 'SPLASH', hint: 'Tela de abertura', categoryId: mobile.id },
+      { word: 'ICON', hint: 'Símbolo do app', categoryId: mobile.id },
+      { word: 'PLAYSTORE', hint: 'Loja Android', categoryId: mobile.id },
+      { word: 'APPSTORE', hint: 'Loja Apple', categoryId: mobile.id },
+
+      // Banco de Dados
+      { word: 'SQL', hint: 'Linguagem de consulta', categoryId: db.id },
+      { word: 'NOSQL', hint: 'Não relacional', categoryId: db.id },
+      { word: 'POSTGRES', hint: 'Banco relacional robusto', categoryId: db.id },
+      { word: 'MYSQL', hint: 'Banco relacional popular', categoryId: db.id },
+      { word: 'MONGODB', hint: 'Banco baseado em documentos', categoryId: db.id },
+      { word: 'SQLITE', hint: 'Banco leve e em arquivo', categoryId: db.id },
+      { word: 'REDIS', hint: 'Banco em memória', categoryId: db.id },
+      { word: 'TABLE', hint: 'Coleção de linhas', categoryId: db.id },
+      { word: 'COLUMN', hint: 'Atributo da tabela', categoryId: db.id },
+      { word: 'INDEX', hint: 'Acelera buscas', categoryId: db.id },
+      { word: 'FOREIGNKEY', hint: 'Chave estrangeira', categoryId: db.id },
+      { word: 'PRIMARYKEY', hint: 'Identificador único', categoryId: db.id },
+      { word: 'JOIN', hint: 'União de tabelas', categoryId: db.id },
+      { word: 'QUERY', hint: 'Consulta ao banco', categoryId: db.id },
+      { word: 'TRIGGER', hint: 'Gatilho de evento', categoryId: db.id },
+      { word: 'VIEW', hint: 'Tabela virtual', categoryId: db.id },
+      { word: 'NORMALIZATION', hint: 'Organização de dados', categoryId: db.id },
+      { word: 'ACID', hint: 'Propriedades de transação', categoryId: db.id },
+      { word: 'TRANSACTION', hint: 'Conjunto de operações', categoryId: db.id },
+      { word: 'BACKUP', hint: 'Cópia de segurança', categoryId: db.id },
+
+      // DevOps
+      { word: 'DOCKER', hint: 'Plataforma de containers', categoryId: devops.id },
+      { word: 'KUBERNETES', hint: 'Orquestração de containers', categoryId: devops.id },
+      { word: 'CI', hint: 'Integração contínua', categoryId: devops.id },
+      { word: 'CD', hint: 'Entrega contínua', categoryId: devops.id },
+      { word: 'PIPELINE', hint: 'Fluxo de automação', categoryId: devops.id },
+      { word: 'AWS', hint: 'Cloud da Amazon', categoryId: devops.id },
+      { word: 'AZURE', hint: 'Cloud da Microsoft', categoryId: devops.id },
+      { word: 'LINUX', hint: 'SO de servidores', categoryId: devops.id },
+      { word: 'BASH', hint: 'Shell do Linux', categoryId: devops.id },
+      { word: 'SSH', hint: 'Acesso remoto seguro', categoryId: devops.id },
+      { word: 'CONTAINER', hint: 'Ambiente isolado', categoryId: devops.id },
+      { word: 'IMAGE', hint: 'Template do container', categoryId: devops.id },
+      { word: 'REGISTRY', hint: 'Armazena imagens', categoryId: devops.id },
+      { word: 'MONITORING', hint: 'Acompanhamento do sistema', categoryId: devops.id },
+      { word: 'LOGS', hint: 'Registros de eventos', categoryId: devops.id },
+      { word: 'PROMETHEUS', hint: 'Ferramenta de métricas', categoryId: devops.id },
+      { word: 'GRAFANA', hint: 'Visualização de métricas', categoryId: devops.id },
+      { word: 'NGINX', hint: 'Servidor web/proxy', categoryId: devops.id },
+      { word: 'FIREWALL', hint: 'Proteção de rede', categoryId: devops.id },
+      { word: 'TERRAFORM', hint: 'Infra como código', categoryId: devops.id },
+
+      // QA
+      { word: 'UNITARIO', hint: 'Teste de unidade', categoryId: qa.id },
+      { word: 'INTEGRACAO', hint: 'Teste de módulos juntos', categoryId: qa.id },
+      { word: 'E2E', hint: 'Teste ponta a ponta', categoryId: qa.id },
+      { word: 'JEST', hint: 'Framework de teste JS', categoryId: qa.id },
+      { word: 'CYPRESS', hint: 'Ferramenta de E2E', categoryId: qa.id },
+      { word: 'PLAYWRIGHT', hint: 'Automação de browser', categoryId: qa.id },
+      { word: 'MOCK', hint: 'Simula comportamento', categoryId: qa.id },
+      { word: 'STUB', hint: 'Resposta pré-definida', categoryId: qa.id },
+      { word: 'COVERAGE', hint: 'Cobertura de código', categoryId: qa.id },
+      { word: 'BUG', hint: 'Defeito no software', categoryId: qa.id },
+      { word: 'DEPLOY', hint: 'Implantação', categoryId: qa.id },
+      { word: 'SMOKE', hint: 'Teste de fumaça', categoryId: qa.id },
+      { word: 'REGRESSION', hint: 'Teste de regressão', categoryId: qa.id },
+      { word: 'TDD', hint: 'Desenvolvimento guiado por testes', categoryId: qa.id },
+      { word: 'BDD', hint: 'Desenvolvimento guiado por comportamento', categoryId: qa.id },
+      { word: 'ASSERT', hint: 'Validação', categoryId: qa.id },
+      { word: 'EXPECT', hint: 'Expectativa do teste', categoryId: qa.id },
+      { word: 'FIXTURE', hint: 'Dados de teste fixos', categoryId: qa.id },
+      { word: 'FLAKY', hint: 'Teste intermitente', categoryId: qa.id },
+      { word: 'SELENIUM', hint: 'Automação web clássica', categoryId: qa.id },
+    ])
+  }
+}
