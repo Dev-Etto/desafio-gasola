@@ -67,10 +67,10 @@ Criar um jogo de forca, usando front react e backend node + adonis
 - [x] **Infraestrutura Real-time (Socket.io)**.
 - [x] **Rota de Autenticação/Criação de Usuário**.
 - [x] **Lógica de Jogo**: Início, chutes, validação.
-- [ ] **Adaptação para Modo Arcade**:
-  - Atualizar `User` para ter `high_score`.
-  - Lógica para calcular pontuação ao vencer.
-  - Rota/Lógica para buscar Ranking (`GET /ranking`).
+- [x] **Adaptação para Modo Arcade**:
+  - [x] Atualizar `User` para ter `high_score`.
+  - [x] Lógica para calcular pontuação ao vencer.
+  - [x] Rota/Lógica para buscar Ranking (`GET /ranking`).
 
 ### Fase 3: Frontend - Interface (React)
 - [ ] Configurar **Styled Components** e Estilos Globais.

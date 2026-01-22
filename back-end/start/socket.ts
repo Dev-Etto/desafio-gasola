@@ -2,6 +2,7 @@ import Ws from '#services/ws'
 import { Server, Socket } from 'socket.io'
 import { safeExec } from '../app/utils/socket_utils.js'
 import { guessLetterValidator } from '#validators/game_validator'
+import GameResponseDto from '#dtos/game_response.dto'
 
 interface JoinGamePayload {
   gameId: number
@@ -37,16 +38,15 @@ Ws.ready((io: Server) => {
         const { game, guessed, wordMask, isWin, isLoss, targetWord, message } =
           await service.processGuess(gameId, validLetter)
 
-        const response = {
-          gameId: game.id,
-          status: game.status,
-          remainingLives: game.remainingLives,
-          lettersGuessed: guessed,
-          wordMask: wordMask,
+        const response = GameResponseDto.fromDomain({
+          game,
+          wordMask,
           message,
-          score: game.score,
-          wordReveal: isWin || isLoss ? targetWord : undefined,
-        }
+          guessed,
+          isWin,
+          isLoss,
+          targetWord,
+        })
 
         io.to(`game:${gameId}`).emit('game_update', response)
       })

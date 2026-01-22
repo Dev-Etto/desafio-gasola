@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import GameService from '#services/game_service'
 import { DEFAULTS } from '../constants/messages.js'
 import { createGameValidator, guessLetterValidator } from '#validators/game_validator'
+import GameResponseDto from '#dtos/game_response.dto'
 
 export default class GamesController {
   async store({ request, response }: HttpContext) {
@@ -33,15 +34,8 @@ export default class GamesController {
     const { game, guessed, wordMask, isWin, isLoss, targetWord, message } =
       await service.processGuess(gameId, letter)
 
-    return response.json({
-      gameId: game.id,
-      status: game.status,
-      remainingLives: game.remainingLives,
-      lettersGuessed: guessed,
-      wordMask: wordMask,
-      message,
-      score: game.score,
-      wordReveal: isWin || isLoss ? targetWord : undefined,
-    })
+    return response.json(
+      GameResponseDto.fromDomain({ game, guessed, wordMask, isWin, isLoss, targetWord, message })
+    )
   }
 }
