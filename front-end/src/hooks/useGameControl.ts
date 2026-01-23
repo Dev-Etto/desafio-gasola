@@ -4,6 +4,11 @@ import { api } from '../services/api'
 import { useGameSession } from './useGameSession'
 import { safeApiCallWithState } from '../utils/api_utils'
 
+const strings = {
+  usernameRequired: 'Username is required',
+  errorStartingGame: 'Error starting the game',
+}
+
 export function useGameControl() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -14,7 +19,7 @@ export function useGameControl() {
     const session = keepSession && currentSessionId ? currentSessionId : uuidv4()
 
     if (!user) {
-      setError('Username is required')
+      setError(strings.usernameRequired)
       return
     }
 
@@ -28,7 +33,7 @@ export function useGameControl() {
       },
       setIsLoading,
       setError,
-      'Erro ao iniciar o jogo.'
+      strings.errorStartingGame
     )
 
     if (data) {

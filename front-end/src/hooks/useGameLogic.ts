@@ -47,7 +47,6 @@ export function useGameLogic() {
         ...prevState,
         ...data,
         hintUsed: data.hintUsed ?? false,
-        hint: data.hint,
       }))
       if (data.score) {
         setScore(data.score)
