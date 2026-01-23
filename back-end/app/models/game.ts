@@ -27,6 +27,9 @@ export default class Game extends BaseModel {
   @column()
   declare score: number
 
+  @column({ serializeAs: 'hint_used' })
+  declare hintUsed: boolean
+
   @column({ serializeAs: 'session_id' })
   declare sessionId: string
 

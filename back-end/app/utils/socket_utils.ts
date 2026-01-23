@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io'
+import { SOCKET_EVENTS } from '../constants/socket_events.js'
 
 export const safeExec = async (socket: Socket, action: () => Promise<void>) => {
   try {
@@ -9,7 +10,7 @@ export const safeExec = async (socket: Socket, action: () => Promise<void>) => {
     const message = error.message || 'An unexpected error occurred'
     const code = error.code || 'E_UNKNOWN'
 
-    socket.emit('error', {
+    socket.emit(SOCKET_EVENTS.ERROR, {
       message,
       code,
     })

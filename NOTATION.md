@@ -73,13 +73,14 @@ Criar um jogo de forca, usando front react e backend node + adonis
   - [x] Rota/Lógica para buscar Ranking (`GET /ranking`).
 
 ### Fase 3: Frontend - Interface (React)
-- [ ] Configurar **Styled Components** e Estilos Globais.
-- [ ] **Contexto de Jogo**: Gerenciar estado da sessão (Pontuação acumulada).
-- [ ] Telas:
-  - **Home**: Input de Nick e Menu.
-  - **Game**: Forca, Teclado, HUD de Pontos/Vidas.
-  - **Win Modal**: Resumo e botão "Próxima".
-  - **Game Over/Ranking**: Lista de recordes e ações de replay.
+- [x] Configurar **Styled Components** e Estilos Globais.
+- [x] **Contexto de Jogo**: Gerenciar estado da sessão (Pontuação acumulada).
+- [x] Telas:
+  - [x] **Home**: Input de Nick e Menu.
+  - [x] **Game**: Forca, Teclado, HUD de Pontos/Vidas.
+  - [x] **Win Modal**: Resumo e botão "Próxima".
+  - [x] **Game Over/Ranking**: Lista de recordes e ações de replay.
+  - [x] **Not Found**: Tela de 404.
 
 ### Fase 4: Extras
-- [ ] Implementar Dicas.
+- [x] Implementar Dicas.

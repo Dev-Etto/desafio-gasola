@@ -1,25 +1,38 @@
-import styled from 'styled-components';
+import { ThemeProvider } from 'styled-components'
+import { GlobalStyles } from './styles/GlobalStyles'
+import { theme } from './styles/theme'
+import { GameProvider } from './contexts/GameProvider'
+import { useGameSession } from './hooks/useGameSession'
+import { Home } from './pages/Home'
+import { Game } from './pages/Game'
+import { Ranking } from './pages/Ranking'
+import { useState } from 'react'
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  gap: 2rem;
-`;
+type Page = 'home' | 'game' | 'ranking'
 
-const Title = styled.h1`
-  font-size: 3rem;
-  color: var(--primary-color);
-`;
+function AppContent() {
+  const { gameId } = useGameSession()
+  const [currentPage, setCurrentPage] = useState<Page>('home')
+
+  if (gameId) {
+    return <Game />
+  }
+
+  if (currentPage === 'ranking') {
+    return <Ranking onBack={() => setCurrentPage('home')} />
+  }
+
+  return <Home onNavigateToRanking={() => setCurrentPage('ranking')} />
+}
 
 function App() {
   return (
-    <Container>
-      <Title>Jogo da Forca</Title>
-      <p>Em breve...</p>
-    </Container>
+    <ThemeProvider theme={theme}>
+      <GlobalStyles />
+      <GameProvider>
+        <AppContent />
+      </GameProvider>
+    </ThemeProvider>
   )
 }
 
