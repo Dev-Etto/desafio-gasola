@@ -11,6 +11,7 @@ export interface GameState {
   status: string
   message: string
   score: number
+  sessionScore?: number
   wordReveal?: string
   hintUsed: boolean
   hint?: string
@@ -29,6 +30,7 @@ export function useGameLogic() {
     status: 'playing',
     message: '',
     score: 0,
+    sessionScore: 0,
     hintUsed: false,
     hint: undefined,
   }
@@ -41,6 +43,7 @@ export function useGameLogic() {
     }
 
     socket.emit(SOCKET_EVENTS.JOIN_GAME, { gameId })
+    setGameState(initialState)
 
     const handleGameUpdate = (data: GameState) => {
       setGameState((prevState) => ({
@@ -48,8 +51,9 @@ export function useGameLogic() {
         ...data,
         hintUsed: data.hintUsed ?? false,
       }))
-      if (data.score) {
-        setScore(data.score)
+      
+      if (typeof data.sessionScore === 'number') {
+        setScore(data.sessionScore)
       }
     }
 

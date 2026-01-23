@@ -31,11 +31,20 @@ export default class GamesController {
     const { letter } = await request.validateUsing(guessLetterValidator)
     const service = new GameService()
 
-    const { game, guessed, wordMask, isWin, isLoss, targetWord, message } =
+    const { game, guessed, wordMask, isWin, isLoss, targetWord, message, sessionScore } =
       await service.processGuess(gameId, letter)
 
     return response.json(
-      GameResponseDto.fromDomain({ game, guessed, wordMask, isWin, isLoss, targetWord, message })
+      GameResponseDto.fromDomain({
+        game,
+        guessed,
+        wordMask,
+        isWin,
+        isLoss,
+        targetWord,
+        message,
+        sessionScore,
+      })
     )
   }
 }

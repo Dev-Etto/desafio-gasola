@@ -27,7 +27,7 @@ Ws.ready((io: Server) => {
 
           const GameService = await import('#services/game_service')
           const service = new GameService.default()
-          const { game, wordMask } = await service.getGameState(gameId)
+          const { game, wordMask, sessionScore } = await service.getGameState(gameId)
 
           const hint = game.hintUsed
             ? game.word.hint || 'No hint available for this word'
@@ -37,6 +37,7 @@ Ws.ready((io: Server) => {
             game,
             wordMask,
             hint,
+            sessionScore,
           })
 
           socket.emit(SOCKET_EVENTS.GAME_UPDATE, response)
@@ -52,7 +53,7 @@ Ws.ready((io: Server) => {
 
         const GameService = await import('#services/game_service')
         const service = new GameService.default()
-        const { game, guessed, wordMask, isWin, isLoss, targetWord, message } =
+        const { game, guessed, wordMask, isWin, isLoss, targetWord, message, sessionScore } =
           await service.processGuess(gameId, validLetter)
 
         const hint = game.hintUsed ? game.word.hint || 'No hint available for this word' : undefined
@@ -66,6 +67,7 @@ Ws.ready((io: Server) => {
           isLoss,
           targetWord,
           hint,
+          sessionScore,
         })
 
         io.to(`game:${gameId}`).emit(SOCKET_EVENTS.GAME_UPDATE, response)

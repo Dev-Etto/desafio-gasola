@@ -72,8 +72,10 @@ const HintSection = styled.div`
 export function Game() {
   const { gameState, guessLetter, requestHint } = useGameLogic()
   const { startNewGame, quitGame } = useGameControl()
-  const { wordMask, remainingLives, lettersGuessed, score, status, message, wordReveal, hintUsed, hint, category } = gameState
+  const { wordMask, remainingLives, lettersGuessed, score, status, message, wordReveal, hintUsed, hint, category, sessionScore } = gameState
   
+  const displayScore = sessionScore ?? score
+
   const isPlaying = status === 'playing'
   const isWon = status === 'won'
   const isLost = status === 'lost'
@@ -88,13 +90,13 @@ export function Game() {
 
   return (
     <Container>
-      <GameHUD score={score} lives={remainingLives} onQuit={quitGame} />
+      <GameHUD score={displayScore} lives={remainingLives} onQuit={quitGame} />
       
       <TopSection>
         <LeftColumn>
           <HangmanFigure lives={remainingLives} />
         </LeftColumn>
-
+        
         <RightColumn>
           <Message>{message}</Message>
           
@@ -121,7 +123,7 @@ export function Game() {
       
       {isWon && (
         <WinModal
-          score={score}
+          score={displayScore}
           word={wordReveal || wordMask}
           onNextWord={handleNextWord}
           onQuit={quitGame}
@@ -130,7 +132,7 @@ export function Game() {
 
       {isLost && (
         <GameOverModal
-          score={score}
+          score={displayScore}
           word={wordReveal || '???'}
           onRestart={handleRestart}
         />

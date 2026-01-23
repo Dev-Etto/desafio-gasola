@@ -43,7 +43,7 @@ test.group('Arcade Mode', (group) => {
     assert.equal(game1Updated?.score, expectedScore1)
 
     const user = await User.findBy('username', username)
-    assert.equal(user?.highScore, 0)
+    assert.equal(user?.highScore, expectedScore1)
 
     const createResponse2 = await client.post('/games').json({ username, sessionId })
     const game2Id = createResponse2.body().gameId

@@ -86,22 +86,20 @@ export default class GameService {
 
     if (isLoss) {
       updates.status = GameStatus.LOST
+    }
 
-      const sessionGames = await Game.query()
-        .where('session_id', game.sessionId)
-        .where('status', GameStatus.WON)
+    game.merge(updates)
+    await game.save()
 
-      const sessionScore = sessionGames.reduce((acc, g) => acc + g.score, 0)
+    const sessionScore = await this.calculateSessionScore(game.sessionId)
 
+    if (isWin || isLoss) {
       const user = await User.find(game.userId)
       if (user && sessionScore > user.highScore) {
         user.highScore = sessionScore
         await user.save()
       }
     }
-
-    game.merge(updates)
-    await game.save()
 
     const wordMask = targetWord
       .split('')
@@ -118,6 +116,7 @@ export default class GameService {
       isLoss,
       targetWord,
       message,
+      sessionScore, 
     }
   }
 
@@ -139,10 +138,21 @@ export default class GameService {
       .map((char) => (guessed.includes(char) ? char : '_'))
       .join(' ')
 
+    const sessionScore = await this.calculateSessionScore(game.sessionId)
+
     return {
       game,
       wordMask,
+      sessionScore,
     }
+  }
+
+  private async calculateSessionScore(sessionId: string): Promise<number> {
+    const sessionGames = await Game.query()
+      .where('session_id', sessionId)
+      .where('status', GameStatus.WON)
+
+    return sessionGames.reduce((acc, g) => acc + g.score, 0)
   }
 
   async requestHint(gameId: number) {

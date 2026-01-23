@@ -11,6 +11,7 @@ export interface GameResponseProps {
   isLoss?: boolean
   targetWord?: string
   hint?: string
+  sessionScore?: number
 }
 
 export default class GameResponseDto {
@@ -26,7 +27,8 @@ export default class GameResponseDto {
     public wordReveal?: string,
     public category?: string,
     public wordLength?: number,
-    public hint?: string
+    public hint?: string,
+    public sessionScore?: number
   ) {}
 
   static fromDomain({
@@ -38,6 +40,7 @@ export default class GameResponseDto {
     isLoss,
     targetWord,
     hint,
+    sessionScore,
   }: GameResponseProps): GameResponseDto {
     const isGameOver =
       isWin || isLoss || game.status === GameStatus.WON || game.status === GameStatus.LOST
@@ -56,7 +59,8 @@ export default class GameResponseDto {
       isGameOver ? targetWord : undefined,
       game.word?.category?.name,
       game.word?.word?.length,
-      hint
+      hint,
+      sessionScore
     )
   }
 }
