@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSocket } from './useSocket'
 import { useGameSession } from './useGameSession'
 import { socket } from '../services/socket'
+import { SOCKET_EVENTS } from '../constants/socket_events'
 
 export interface GameState {
   wordMask: string
@@ -21,7 +22,7 @@ export function useGameLogic() {
   const { gameId, setScore } = useGameSession()
   useSocket()
 
-  const [gameState, setGameState] = useState<GameState>({
+  const initialState: GameState = {
     wordMask: '',
     remainingLives: 6,
     lettersGuessed: [],
@@ -30,54 +31,44 @@ export function useGameLogic() {
     score: 0,
     hintUsed: false,
     hint: undefined,
-  })
+  }
+
+  const [gameState, setGameState] = useState<GameState>(initialState)
 
   useEffect(() => {
     if (!gameId) {
-      setGameState({
-        wordMask: '',
-        remainingLives: 6,
-        lettersGuessed: [],
-        status: 'playing',
-        message: '',
-        score: 0,
-        hintUsed: false,
-        hint: undefined,
-      })
       return
     }
 
-    setGameState((prevState) => ({
-      ...prevState,
-      hintUsed: false,
-      hint: undefined,
-    }))
+    socket.emit(SOCKET_EVENTS.JOIN_GAME, { gameId })
 
-    socket.emit('join_game', { gameId })
-
-    socket.on('game_update', (data: GameState) => {
+    const handleGameUpdate = (data: GameState) => {
       setGameState((prevState) => ({
         ...prevState,
         ...data,
+        hintUsed: data.hintUsed ?? false,
+        hint: data.hint,
       }))
       if (data.score) {
         setScore(data.score)
       }
-    })
+    }
+
+    socket.on(SOCKET_EVENTS.GAME_UPDATE, handleGameUpdate)
 
     return () => {
-      socket.off('game_update')
+      socket.off(SOCKET_EVENTS.GAME_UPDATE, handleGameUpdate)
     }
   }, [gameId, setScore])
 
   const guessLetter = (letter: string) => {
     if (!gameId) return
-    socket.emit('guess', { gameId, letter })
+    socket.emit(SOCKET_EVENTS.GUESS, { gameId, letter })
   }
 
   const requestHint = () => {
     if (!gameId) return
-    socket.emit('request_hint', { gameId })
+    socket.emit(SOCKET_EVENTS.REQUEST_HINT, { gameId })
   }
 
   return {

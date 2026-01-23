@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { api } from '../services/api'
+import { safeApiCallWithState } from '../utils/api_utils'
 
 export interface RankingItem {
   username: string
@@ -12,22 +13,26 @@ export function useRanking() {
   const [error, setError] = useState('')
 
   const fetchRankings = async () => {
-    setIsLoading(true)
-    setError('')
+    const data = await safeApiCallWithState(
+      async () => {
+        const response = await api.get<RankingItem[]>('/ranking')
+        return response.data
+      },
+      setIsLoading,
+      setError,
+      'Erro ao carregar ranking.'
+    )
 
-    try {
-      const response = await api.get('/ranking')
-      setRankings(response.data)
-    } catch (err) {
-      console.error('Error fetching rankings:', err)
-      setError('Erro ao carregar ranking.')
-    } finally {
-      setIsLoading(false)
+    if (data) {
+      setRankings(data)
     }
   }
 
   useEffect(() => {
-    fetchRankings()
+    const timer = setTimeout(() => {
+      fetchRankings()
+    }, 0)
+    return () => clearTimeout(timer)
   }, [])
 
   return {

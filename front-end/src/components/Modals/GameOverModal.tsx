@@ -3,7 +3,7 @@ import { Modal } from '../../components/Modal'
 import { RankingTable } from '../../components/RankingTable'
 import { useRanking } from '../../hooks/useRanking'
 import { useGameSession } from '../../hooks/useGameSession'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 
 interface GameOverModalProps {
   score: number
@@ -79,19 +79,17 @@ const strings = {
 export function GameOverModal({ score, word, onRestart }: GameOverModalProps) {
   const { rankings, refetch } = useRanking()
   const { username } = useGameSession()
-  const [isNewRecord, setIsNewRecord] = useState(false)
 
   useEffect(() => {
     refetch()
   }, [refetch])
 
-  useEffect(() => {
+  const isNewRecord = useMemo(() => {
     if (rankings.length > 0 && username) {
       const userRanking = rankings.find(r => r.username === username)
-      if (userRanking && score > userRanking.highScore) {
-        setIsNewRecord(true)
-      }
+      return userRanking ? score > userRanking.highScore : false
     }
+    return false
   }, [rankings, username, score])
 
   return (

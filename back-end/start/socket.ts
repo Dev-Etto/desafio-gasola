@@ -3,6 +3,7 @@ import { Server, Socket } from 'socket.io'
 import { guessLetterValidator } from '#validators/game_validator'
 import GameResponseDto from '#dtos/game_response.dto'
 import { safeExec } from '../app/utils/socket_utils.js'
+import { SOCKET_EVENTS } from '../app/constants/socket_events.js'
 
 interface JoinGamePayload {
   gameId: number
@@ -14,10 +15,10 @@ interface GuessPayload {
 }
 
 Ws.ready((io: Server) => {
-  io.on('connection', (socket: Socket) => {
+  io.on(SOCKET_EVENTS.CONNECTION, (socket: Socket) => {
     console.log('New connection: ', socket.id)
 
-    socket.on('join_game', (data: JoinGamePayload) => {
+    socket.on(SOCKET_EVENTS.JOIN_GAME, (data: JoinGamePayload) => {
       safeExec(socket, async () => {
         const { gameId } = data
         if (gameId) {
@@ -38,12 +39,12 @@ Ws.ready((io: Server) => {
             hint,
           })
 
-          socket.emit('game_update', response)
+          socket.emit(SOCKET_EVENTS.GAME_UPDATE, response)
         }
       })
     })
 
-    socket.on('guess', (data: GuessPayload) => {
+    socket.on(SOCKET_EVENTS.GUESS, (data: GuessPayload) => {
       safeExec(socket, async () => {
         const { gameId, letter } = data
 
@@ -67,11 +68,11 @@ Ws.ready((io: Server) => {
           hint,
         })
 
-        io.to(`game:${gameId}`).emit('game_update', response)
+        io.to(`game:${gameId}`).emit(SOCKET_EVENTS.GAME_UPDATE, response)
       })
     })
 
-    socket.on('request_hint', (data: JoinGamePayload) => {
+    socket.on(SOCKET_EVENTS.REQUEST_HINT, (data: JoinGamePayload) => {
       safeExec(socket, async () => {
         const { gameId } = data
 
@@ -86,11 +87,11 @@ Ws.ready((io: Server) => {
           hint,
         })
 
-        io.to(`game:${gameId}`).emit('game_update', response)
+        io.to(`game:${gameId}`).emit(SOCKET_EVENTS.GAME_UPDATE, response)
       })
     })
 
-    socket.on('disconnect', () => {
+    socket.on(SOCKET_EVENTS.DISCONNECT, () => {
       console.log('Client disconnected', socket.id)
     })
   })

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { api } from '../services/api'
 import { useGameSession } from './useGameSession'
+import { safeApiCallWithState } from '../utils/api_utils'
 
 export function useGameControl() {
   const [isLoading, setIsLoading] = useState(false)
@@ -9,36 +10,35 @@ export function useGameControl() {
   const { setUsername, setGameId, setScore, setSessionId, sessionId: currentSessionId, username: currentUsername } = useGameSession()
 
   const startNewGame = async (nickname?: string, keepSession = false) => {
-    setIsLoading(true)
-    setError('')
+    const user = nickname || currentUsername
+    const session = keepSession && currentSessionId ? currentSessionId : uuidv4()
 
-    try {
-      const user = nickname || currentUsername
-      const session = keepSession && currentSessionId ? currentSessionId : uuidv4()
+    if (!user) {
+      setError('Username is required')
+      return
+    }
 
-      if (!user) throw new Error('Username is required')
+    const data = await safeApiCallWithState(
+      async () => {
+        const response = await api.post<{ gameId: number }>('/games', {
+          username: user,
+          sessionId: session,
+        })
+        return response.data
+      },
+      setIsLoading,
+      setError,
+      'Erro ao iniciar o jogo.'
+    )
 
-      const response = await api.post('/games', {
-        username: user,
-        sessionId: session,
-      })
-
-      const { gameId } = response.data
-
+    if (data) {
       setUsername(user)
-      setGameId(gameId)
+      setGameId(data.gameId)
       setSessionId(session)
       
       if (!keepSession) {
         setScore(0)
       }
-
-    } catch (err) {
-      console.error(err)
-      setError('Erro ao iniciar o jogo.')
-      throw err 
-    } finally {
-      setIsLoading(false)
     }
   }
 
