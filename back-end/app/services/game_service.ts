@@ -32,6 +32,7 @@ export default class GameService {
           remainingLives: 6,
           lettersGuessed: JSON.stringify([]),
           score: 0,
+          hintUsed: false,
         },
         { client: trx }
       )
@@ -117,6 +118,56 @@ export default class GameService {
       isLoss,
       targetWord,
       message,
+    }
+  }
+
+  async getGameState(gameId: number) {
+    const game = await Game.find(gameId)
+
+    if (!game) {
+      throw new GameNotFoundException()
+    }
+
+    await game.load('word')
+    await game.word.load('category')
+
+    const targetWord = game.word.word.toUpperCase()
+    const guessed = safeParse<string[]>(game.lettersGuessed, [])
+
+    const wordMask = targetWord
+      .split('')
+      .map((char) => (guessed.includes(char) ? char : '_'))
+      .join(' ')
+
+    return {
+      game,
+      wordMask,
+    }
+  }
+
+  async requestHint(gameId: number) {
+    const game = await Game.find(gameId)
+
+    if (!game) {
+      throw new GameNotFoundException()
+    }
+
+    if (game.status !== GameStatus.PLAYING) {
+      throw new InvalidGameActionException(ERROR_MESSAGES.GAME_ALREADY_OVER)
+    }
+
+    if (game.hintUsed) {
+      throw new InvalidGameActionException('Hint already used for this game')
+    }
+
+    await game.load('word')
+
+    game.hintUsed = true
+    await game.save()
+
+    return {
+      game,
+      hint: game.word.hint || 'No hint available for this word',
     }
   }
 

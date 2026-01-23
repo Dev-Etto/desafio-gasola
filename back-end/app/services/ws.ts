@@ -12,9 +12,11 @@ class WsService {
     }
 
     this.isBooted = true
+    const corsOrigin = env.get('CORS_ORIGIN')
     this.io = new Server(httpServer, {
       cors: {
-        origin: env.get('CORS_ORIGIN').split(',') || '*',
+        origin: corsOrigin === '*' ? '*' : corsOrigin.split(','),
+        credentials: true,
       },
     })
 
