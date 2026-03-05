@@ -20,8 +20,10 @@ test.group('Game Score & Ranking', () => {
 
       const game = await Game.find(gameId)
       assert.exists(game, 'Game should exist after creation')
-      game!.wordId = wordId
-      await game!.save()
+      if (!game) return
+
+      game.wordId = wordId
+      await game.save()
 
       return gameId
     }

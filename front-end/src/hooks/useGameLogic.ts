@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useSocket } from './useSocket'
-import { useGameSession } from './useGameSession'
-import { socket } from '../services/socket'
 import { SOCKET_EVENTS } from '../constants/socket_events'
+import { socket } from '../services/socket'
+import { useGameSession } from './useGameSession'
+import { useSocket } from './useSocket'
 
 export interface GameState {
   wordMask: string
@@ -58,11 +58,11 @@ export function useGameLogic() {
     }
 
     socket.emit(SOCKET_EVENTS.JOIN_GAME, { gameId })
-    setGameState(INITIAL_GAME_STATE)
     socket.on(SOCKET_EVENTS.GAME_UPDATE, handleGameUpdate)
 
     return () => {
       socket.off(SOCKET_EVENTS.GAME_UPDATE, handleGameUpdate)
+      setGameState(INITIAL_GAME_STATE)
     }
   }, [gameId, handleGameUpdate])
 
@@ -82,7 +82,6 @@ export function useGameLogic() {
   return useMemo(
     () => ({
       gameState,
-      setGameState,
       guessLetter,
       requestHint,
     }),
