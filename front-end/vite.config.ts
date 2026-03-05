@@ -8,6 +8,14 @@ export default defineConfig(({ mode }) => {
     plugins: [react(), tsconfigPaths()],
     server: {
       port: parseInt(env.VITE_PORT) || 5173,
+      allowedHosts: ['*'],
+      proxy: {
+        '/socket.io': {
+          target: env.VITE_API_URL,
+          ws: true,
+          changeOrigin: true,
+        },
+      },
     },
   }
 })

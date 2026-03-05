@@ -75,13 +75,14 @@ export default class GameService {
       updates.remainingLives = game.remainingLives - 1
     }
 
+    const currentLives = updates.remainingLives ?? game.remainingLives
     const isWin = targetWord.split('').every((char) => guessed.includes(char))
-    const isLoss = (updates.remainingLives ?? game.remainingLives) <= 0
+    const isLoss = currentLives <= 0
 
     if (isWin) {
       updates.status = GameStatus.WON
       const uniqueLetters = new Set(targetWord.replace(/\s/g, '').split('')).size
-      updates.score = uniqueLetters * 10 + (updates.remainingLives ?? game.remainingLives) * 5
+      updates.score = uniqueLetters * 10 + currentLives * 5
     }
 
     if (isLoss) {
@@ -101,11 +102,7 @@ export default class GameService {
       }
     }
 
-    const wordMask = targetWord
-      .split('')
-      .map((char) => (guessed.includes(char) ? char : '_'))
-      .join(' ')
-
+    const wordMask = this.buildWordMask(targetWord, guessed)
     const message = this.getGameMessage(isWin, isLoss)
 
     return {
@@ -116,7 +113,7 @@ export default class GameService {
       isLoss,
       targetWord,
       message,
-      sessionScore, 
+      sessionScore,
     }
   }
 
@@ -132,12 +129,7 @@ export default class GameService {
 
     const targetWord = game.word.word.toUpperCase()
     const guessed = safeParse<string[]>(game.lettersGuessed, [])
-
-    const wordMask = targetWord
-      .split('')
-      .map((char) => (guessed.includes(char) ? char : '_'))
-      .join(' ')
-
+    const wordMask = this.buildWordMask(targetWord, guessed)
     const sessionScore = await this.calculateSessionScore(game.sessionId)
 
     return {
@@ -145,14 +137,6 @@ export default class GameService {
       wordMask,
       sessionScore,
     }
-  }
-
-  private async calculateSessionScore(sessionId: string): Promise<number> {
-    const sessionGames = await Game.query()
-      .where('session_id', sessionId)
-      .where('status', GameStatus.WON)
-
-    return sessionGames.reduce((acc, g) => acc + g.score, 0)
   }
 
   async requestHint(gameId: number) {
@@ -167,7 +151,7 @@ export default class GameService {
     }
 
     if (game.hintUsed) {
-      throw new InvalidGameActionException('Hint already used for this game')
+      throw new InvalidGameActionException(ERROR_MESSAGES.HINT_ALREADY_USED)
     }
 
     await game.load('word')
@@ -177,11 +161,26 @@ export default class GameService {
 
     return {
       game,
-      hint: game.word.hint || 'No hint available for this word',
+      hint: game.word.hint || ERROR_MESSAGES.NO_HINT_AVAILABLE,
     }
   }
 
-  getGameMessage(isWin: boolean, isLoss: boolean): string {
+  private buildWordMask(targetWord: string, guessed: string[]): string {
+    return targetWord
+      .split('')
+      .map((char) => (guessed.includes(char) ? char : '_'))
+      .join(' ')
+  }
+
+  private async calculateSessionScore(sessionId: string): Promise<number> {
+    const sessionGames = await Game.query()
+      .where('session_id', sessionId)
+      .where('status', GameStatus.WON)
+
+    return sessionGames.reduce((acc, g) => acc + g.score, 0)
+  }
+
+  private getGameMessage(isWin: boolean, isLoss: boolean): string {
     if (isWin) {
       return GAME_MESSAGES.YOU_WON
     }

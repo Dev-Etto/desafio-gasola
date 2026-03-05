@@ -80,7 +80,13 @@ Criar um jogo de forca, usando front react e backend node + adonis
   - [x] **Game**: Forca, Teclado, HUD de Pontos/Vidas.
   - [x] **Win Modal**: Resumo e botão "Próxima".
   - [x] **Game Over/Ranking**: Lista de recordes e ações de replay.
-  - [x] **Not Found**: Tela de 404.
 
 ### Fase 4: Extras
 - [x] Implementar Dicas.
+
+### Fase 5: Melhorias e Refatorações
+- [] dockerizar a aplicação
+- [] criar uma instancia de banco de dados diferente para testes.
+- [] travar versões de dependências.
+- [] Remover repetição de código da aplicação.
+- [] Remover o endpoint HTTP Guess, ele agora é feito via socket.

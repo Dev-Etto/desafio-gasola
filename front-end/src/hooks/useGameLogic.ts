@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSocket } from './useSocket'
 import { useGameSession } from './useGameSession'
 import { socket } from '../services/socket'
@@ -19,23 +19,38 @@ export interface GameState {
   wordLength?: number
 }
 
+const INITIAL_GAME_STATE: GameState = {
+  wordMask: '',
+  remainingLives: 6,
+  lettersGuessed: [],
+  status: 'playing',
+  message: '',
+  score: 0,
+  sessionScore: 0,
+  hintUsed: false,
+  hint: undefined,
+}
+
 export function useGameLogic() {
   const { gameId, setScore } = useGameSession()
   useSocket()
 
-  const initialState: GameState = {
-    wordMask: '',
-    remainingLives: 6,
-    lettersGuessed: [],
-    status: 'playing',
-    message: '',
-    score: 0,
-    sessionScore: 0,
-    hintUsed: false,
-    hint: undefined,
-  }
+  const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE)
 
-  const [gameState, setGameState] = useState<GameState>(initialState)
+  const handleGameUpdate = useCallback(
+    (data: GameState) => {
+      setGameState((prevState) => ({
+        ...prevState,
+        ...data,
+        hintUsed: data.hintUsed ?? false,
+      }))
+
+      if (typeof data.sessionScore === 'number') {
+        setScore(data.sessionScore)
+      }
+    },
+    [setScore]
+  )
 
   useEffect(() => {
     if (!gameId) {
@@ -43,41 +58,34 @@ export function useGameLogic() {
     }
 
     socket.emit(SOCKET_EVENTS.JOIN_GAME, { gameId })
-    setGameState(initialState)
-
-    const handleGameUpdate = (data: GameState) => {
-      setGameState((prevState) => ({
-        ...prevState,
-        ...data,
-        hintUsed: data.hintUsed ?? false,
-      }))
-      
-      if (typeof data.sessionScore === 'number') {
-        setScore(data.sessionScore)
-      }
-    }
-
+    setGameState(INITIAL_GAME_STATE)
     socket.on(SOCKET_EVENTS.GAME_UPDATE, handleGameUpdate)
 
     return () => {
       socket.off(SOCKET_EVENTS.GAME_UPDATE, handleGameUpdate)
     }
-  }, [gameId, setScore])
+  }, [gameId, handleGameUpdate])
 
-  const guessLetter = (letter: string) => {
-    if (!gameId) return
-    socket.emit(SOCKET_EVENTS.GUESS, { gameId, letter })
-  }
+  const guessLetter = useCallback(
+    (letter: string) => {
+      if (!gameId) return
+      socket.emit(SOCKET_EVENTS.GUESS, { gameId, letter })
+    },
+    [gameId]
+  )
 
-  const requestHint = () => {
+  const requestHint = useCallback(() => {
     if (!gameId) return
     socket.emit(SOCKET_EVENTS.REQUEST_HINT, { gameId })
-  }
+  }, [gameId])
 
-  return {
-    gameState,
-    setGameState,
-    guessLetter,
-    requestHint,
-  }
+  return useMemo(
+    () => ({
+      gameState,
+      setGameState,
+      guessLetter,
+      requestHint,
+    }),
+    [gameState, guessLetter, requestHint]
+  )
 }

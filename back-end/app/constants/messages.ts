@@ -12,6 +12,8 @@ export const ERROR_MESSAGES = {
   GAME_ALREADY_OVER: 'Game is already over',
   LETTER_ALREADY_GUESSED: 'Letter already guessed',
   NO_PUZZLES_AVAILABLE: 'No puzzles available right now',
+  HINT_ALREADY_USED: 'Hint already used for this game',
+  NO_HINT_AVAILABLE: 'No hint available for this word',
 }
 
 export const DEFAULTS = {
