@@ -36,8 +36,13 @@ jobs:
 
       - name: Run Tests
         env:
-          APP_KEY: ${{ secrets.APP_KEY || 'z_S-I_O6rK5-8NfG_HjO_j_H_j_H_j_H' }} # Mock key for CI
+          APP_KEY: ${{ secrets.APP_KEY || 'z_S-I_O6rK5-8NfG_HjO_j_H_j_H_j_H' }}
           DB_CONNECTION: sqlite
+          HOST: '127.0.0.1'
+          LOG_LEVEL: info
+          CORS_ORIGIN: '*'
+          PORT: 3001
+          NODE_ENV: test
         run: npm run test
 
       - name: Run Build
