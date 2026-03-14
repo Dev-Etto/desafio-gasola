@@ -1,0 +1,45 @@
+name: CI/CD Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+      - staging
+      - develop
+  push:
+    branches:
+      - main
+      - staging
+      - develop
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm run install:all
+
+      - name: Code Quality (Lint)
+        run: npm run lint
+
+      - name: Type Checking
+        run: npm run typecheck
+
+      - name: Run Tests
+        env:
+          APP_KEY: ${{ secrets.APP_KEY || 'z_S-I_O6rK5-8NfG_HjO_j_H_j_H_j_H' }} # Mock key for CI
+          DB_CONNECTION: sqlite
+        run: npm run test
+
+      - name: Run Build
+        run: npm run build
+
